@@ -27,9 +27,9 @@ app.get('/text/:msg', function(req, res) {
 	var msg = req.param("msg") || "error";
 
 	///// BEGIN MAGIC NUMBERS /////
-	var adjustment = 5; // times depth of text (added to distance to camera).
+	var adjustment = 1; // times depth of text (added to distance to camera).
 
-	var fieldOfView = 50; // degrees
+	var fieldOfView = 90; // degrees
 	var altitudeFactor = Math.abs(Math.tan((180 - fieldOfView) / 2)); // helper factor to calculate camera height
 	var near = 1; // px
 	var far = 100000; // px
@@ -92,6 +92,10 @@ app.get('/text/:msg', function(req, res) {
 	camera.position.x = 0;
 	camera.position.y = 0;
 	camera.position.z = altitudeFactor * textLength / 2 + textDepth * adjustment;
+
+	camera.rotation.x = 0;
+	camera.rotation.y = 0;
+	camera.rotation.z = -Math.PI / 2;
 
 	console.log("eye position: ");
 	console.log(camera.position);

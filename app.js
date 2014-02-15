@@ -83,7 +83,8 @@ app.get('/text/:msg', function(req, res) {
 	text.rotation.y = 0;
 	text.rotation.z = 0;
 
-	console.log("text offsets: " + textOffsets);
+	console.log("text offsets: ")
+	console.log(textOffsets);
 
 	scene.add( text );
 	
@@ -92,7 +93,8 @@ app.get('/text/:msg', function(req, res) {
 	camera.position.y = 0;
 	camera.position.z = altitudeFactor * textLength / 2 + textDepth * adjustment;
 
-	console.log("eye position: " + camera.position);
+	console.log("eye position: ");
+	console.log(camera.position);
 
 	// Render canvas as image and send to the client.
 	renderer.render(scene, camera);

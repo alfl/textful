@@ -17,20 +17,24 @@ app.configure(function(){
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(app.router);
+  //app.use(express.json());       // to support JSON-encoded bodies
+  //app.use(express.urlencoded()); // to support URL-encoded bodies
   app.use(express.static(path.join(__dirname, 'public')));
 });
 
-app.configure('development', function(){
+app.configure('development', function() {
   app.use(express.errorHandler());
 });
 
 app.get('/', routes.index);
 app.get('/users', user.list);
-app.get('/text', function(req, res) {
-	// Render Hello World and send back image.
+app.get('/text/:msg', function(req, res) {
+	if (!req || !req.query) return;
 	var width = 500;
 	var height = 500;
-	var msg = "Hello World";
+	var msg = req.param("msg") || "error";
+
+	console.log("msg:" + req.query.msg);
 
 	var camera = new THREE.PerspectiveCamera(50, width / height, 1, 1000);
 	camera.position.z = 900;
@@ -44,7 +48,6 @@ app.get('/text', function(req, res) {
 
 	var text3d = new THREE.TextGeometry( msg, {} );
 	text3d.computeBoundingBox();
-	console.log(text3d.boundingBox);
 	
 	var centerOffset = -0.5 * ( text3d.boundingBox.max.x - text3d.boundingBox.min.x );
 

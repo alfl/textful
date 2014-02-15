@@ -8,6 +8,7 @@ instructions
 
 1. npm install
 1. pray, because we're on light brances of the dependency tree.
+	1. test
 1. grunt
 1. visit localhost:3000/text/hello.
 1. change the url part after "text/" to change message.

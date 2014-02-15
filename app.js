@@ -17,8 +17,6 @@ app.configure(function(){
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(app.router);
-  //app.use(express.json());       // to support JSON-encoded bodies
-  //app.use(express.urlencoded()); // to support URL-encoded bodies
   app.use(express.static(path.join(__dirname, 'public')));
 });
 
@@ -26,25 +24,23 @@ app.configure('development', function() {
   app.use(express.errorHandler());
 });
 
-app.get('/', routes.index);
-app.get('/users', user.list);
 app.get('/text/:msg', function(req, res) {
-	if (!req || !req.query) return;
+	if (!req || !req.query || !res) return;
+
 	var width = 500;
 	var height = 500;
 	var msg = req.param("msg") || "error";
-
-	console.log("msg:" + req.query.msg);
 
 	var camera = new THREE.PerspectiveCamera(50, width / height, 1, 1000);
 	camera.position.z = 900;
 	
 	var scene = new THREE.Scene();
+
 	var renderer = new THREE.CanvasRenderer();
 	renderer.setSize(width, height);
 	renderer.setClearColor(0x000000, 1);
 
-	var fontData = THREE.FontUtils.loadFace(helvetiker);
+	THREE.FontUtils.loadFace(helvetiker);
 
 	var text3d = new THREE.TextGeometry( msg, {} );
 	text3d.computeBoundingBox();
@@ -55,14 +51,14 @@ app.get('/text/:msg', function(req, res) {
 	
 	var text = new THREE.Mesh( text3d, textMaterial );
 	text.position.x = centerOffset;
-	text.position.y = 100;
+	text.position.y = 0;
 	text.position.z = 0;
 	text.rotation.x = 0;
 	text.rotation.y = Math.PI * 2;
 
-	var group = new THREE.Object3D();
-	group.add( text );
-	scene.add( group );
+	//var group = new THREE.Object3D();
+	//group.add( text );
+	scene.add( text );
 
 	// Output
 	renderer.render(scene, camera);

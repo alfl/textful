@@ -1,14 +1,10 @@
-
-/**
- * Module dependencies.
- */
-
 var express = require('express')
   , routes = require('./routes')
   , user = require('./routes/user')
   , http = require('http')
   , path = require('path')
   , THREE = require('three.js')
+  , helvetiker = require('./helvetiker_regular.typeface.js');
 
 var app = express();
 
@@ -31,7 +27,6 @@ app.configure('development', function(){
 app.get('/', routes.index);
 app.get('/users', user.list);
 app.get('/text', function(req, res) {
-
 	// Render Hello World and send back image.
 	var width = 500;
 	var height = 500;
@@ -39,21 +34,34 @@ app.get('/text', function(req, res) {
 
 	var camera = new THREE.PerspectiveCamera(50, width / height, 1, 1000);
 	var scene = new THREE.Scene();
-
-
-
 	var renderer = new THREE.CanvasRenderer();
 	renderer.setSize(width, height);
+	renderer.setClearColor(0x000000, 1);
 
 	camera.position.z = 100;
 
-	var camera_container = new THREE.Object3D();
-	scene.add(camera_container);
-	camera_container.add(camera);
+	/*var fontData = THREE.FontUtils.loadFace(helvetiker);
 
-	camera.position.z = 75;
+	var text3d = new THREE.TextGeometry( msg, {} );
+	text3d.computeBoundingBox();
+	
+	var centerOffset = -0.5 * ( text3d.boundingBox.max.x - text3d.boundingBox.min.x );
+	var textMaterial = new THREE.MeshBasicMaterial( { color: Math.random() * 0xffffff, overdraw: true } );
+	
+	var text = new THREE.Mesh( text3d, textMaterial );
+	text.position.x = centerOffset;
+	text.position.y = 100;
+	text.position.z = 0;
+	text.rotation.x = 0;
+	text.rotation.y = Math.PI * 2;
 
-	// Draw
+	var group = new THREE.Object3D();
+	group.add( text );
+	scene.add( group );*/
+
+	var cube = new THREE.Mesh(new THREE.CubeGeometry(200, 200, 200), new THREE.MeshNormalMaterial());
+	cube.overdraw = true;
+	scene.add(cube);
 	
 	// Output
 	renderer.render(scene, camera);

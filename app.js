@@ -1,6 +1,4 @@
 var express = require('express')
-  , routes = require('./routes')
-  , user = require('./routes/user')
   , http = require('http')
   , path = require('path')
   , THREE = require('three.js')
@@ -31,6 +29,7 @@ app.get('/text/:msg', function(req, res) {
 	var height = 500;
 	var msg = req.param("msg") || "error";
 
+	// Set up camera and place it far enough away to see the text.
 	var camera = new THREE.PerspectiveCamera(50, width / height, 1, 1000);
 	camera.position.z = 900;
 	
@@ -40,6 +39,7 @@ app.get('/text/:msg', function(req, res) {
 	renderer.setSize(width, height);
 	renderer.setClearColor(0x000000, 1);
 
+	// Load the font, calculate geometry for message, center, and texture it.
 	THREE.FontUtils.loadFace(helvetiker);
 
 	var text3d = new THREE.TextGeometry( msg, {} );
@@ -56,11 +56,9 @@ app.get('/text/:msg', function(req, res) {
 	text.rotation.x = 0;
 	text.rotation.y = Math.PI * 2;
 
-	//var group = new THREE.Object3D();
-	//group.add( text );
 	scene.add( text );
 
-	// Output
+	// Render canvas as image and send to the client.
 	renderer.render(scene, camera);
 	renderer.domElement.toBuffer(function(err, buf) {
 		res.contentType('image/jpg');

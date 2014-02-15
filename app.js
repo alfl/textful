@@ -36,8 +36,8 @@ app.get('/text/:msg', function(req, res) {
 	var width = 500; // px
 	var height = 500; // px
 
-	var textColorMask   = 0xFFFFFF; // Mask applied to Math.random() to color text.
-	var backgroundColor = 0x000000;
+	var textColor       = Math.random() * 0xFFFFFF;
+	var backgroundColor = 0xFFFFFF ^ textColor; // Set to complement of textColor.
 	var backgroundAlpha = 1;
 	///// END MAGIC NUMBERS /////
 
@@ -45,9 +45,12 @@ app.get('/text/:msg', function(req, res) {
 	
 	var scene = new THREE.Scene();
 
+	console.log(backgroundColor.toString(16));
+
 	var renderer = new THREE.CanvasRenderer();
 	renderer.setSize(width, height);
-	renderer.setClearColor(backgroundColor, backgroundAlpha);
+	renderer.setClearColorHex(backgroundColor, backgroundAlpha);
+	renderer.clear();
 
 	// Load the font so we can calculate geometry.
 	THREE.FontUtils.loadFace(helvetiker);
@@ -69,7 +72,7 @@ app.get('/text/:msg', function(req, res) {
 	
 	// Create, texture, and position text.
 	var textMaterial = new THREE.MeshBasicMaterial({
-		color: Math.random() * textColorMask,
+		color: textColor, 
 	    	overdraw: true
 	});
 	
@@ -95,7 +98,7 @@ app.get('/text/:msg', function(req, res) {
 
 	camera.rotation.x = 0;
 	camera.rotation.y = 0;
-	camera.rotation.z = 0;
+	camera.rotation.z = 0;//-Math.PI / 2;
 
 	console.log("eye position: ");
 	console.log(camera.position);

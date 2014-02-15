@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+PKG_CONFIG_PATH=/opt/X11/lib/pkgconfig npm install

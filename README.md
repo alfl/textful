@@ -15,4 +15,3 @@ instructions
 1. grunt
 1. visit localhost:3000/text/hello.
 1. change the url part after "text/" to change message.
-1. I've hacked up the fonts pretty good.

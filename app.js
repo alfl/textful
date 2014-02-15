@@ -26,6 +26,7 @@ app.get('/text/:msg', function(req, res) {
 	if (!req || !req.query || !res) return;
 	var msg = req.param("msg") || "error";
 
+	///// BEGIN MAGIC NUMBERS /////
 	var adjustment = 5; // times depth of text (added to distance to camera).
 
 	var fieldOfView = 50; // degrees
@@ -38,9 +39,7 @@ app.get('/text/:msg', function(req, res) {
 	var textColorMask   = 0xFFFFFF; // Mask applied to Math.random() to color text.
 	var backgroundColor = 0x000000;
 	var backgroundAlpha = 1;
-
-	// Set the camera distance to the apex of the triange between the ends.
-	var eyeDistanceZ = altitudeFactor * width / 2; // px
+	///// END MAGIC NUMBERS /////
 
 	var camera = new THREE.PerspectiveCamera(fieldOfView, width / height, near, far);
 	
@@ -50,6 +49,7 @@ app.get('/text/:msg', function(req, res) {
 	renderer.setSize(width, height);
 	renderer.setClearColor(backgroundColor, backgroundAlpha);
 
+	// Load the font so we can calculate geometry.
 	THREE.FontUtils.loadFace(helvetiker);
 
 	var text3d = new THREE.TextGeometry( msg, {} );
@@ -66,16 +66,8 @@ app.get('/text/:msg', function(req, res) {
 		y: -0.5 * textHeight,
 		z: -0.5 * textDepth
 	};
-
-	console.log("text position: " + textOffsets);
 	
-	// Stand back far enough to see the text;
-	camera.position.x = 0;
-	camera.position.y = 0;
-	camera.position.z = altitudeFactor * textLength / 2 + textDepth * adjustment;
-
-	console.log("eye position: " + camera.position);
-
+	// Create, texture, and position text.
 	var textMaterial = new THREE.MeshBasicMaterial({
 		color: Math.random() * textColorMask,
 	    	overdraw: true
@@ -91,7 +83,16 @@ app.get('/text/:msg', function(req, res) {
 	text.rotation.y = 0;
 	text.rotation.z = 0;
 
+	console.log("text offsets: " + textOffsets);
+
 	scene.add( text );
+	
+	// Set the camera distance to the apex of the triange between the ends.
+	camera.position.x = 0;
+	camera.position.y = 0;
+	camera.position.z = altitudeFactor * textLength / 2 + textDepth * adjustment;
+
+	console.log("eye position: " + camera.position);
 
 	// Render canvas as image and send to the client.
 	renderer.render(scene, camera);

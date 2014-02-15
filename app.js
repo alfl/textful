@@ -24,37 +24,72 @@ app.configure('development', function() {
 
 app.get('/text/:msg', function(req, res) {
 	if (!req || !req.query || !res) return;
-
-	var width = 500;
-	var height = 500;
 	var msg = req.param("msg") || "error";
 
-	// Set up camera and place it far enough away to see the text.
-	var camera = new THREE.PerspectiveCamera(50, width / height, 1, 1000);
-	camera.position.z = 900;
+	var adjustment = 5; // times depth of text (added to distance to camera).
+
+	var fieldOfView = 50; // degrees
+	var altitudeFactor = Math.abs(Math.tan((180 - fieldOfView) / 2)); // helper factor to calculate camera height
+	var near = 1; // px
+	var far = 100000; // px
+	var width = 500; // px
+	var height = 500; // px
+
+	var textColorMask   = 0xFFFFFF; // Mask applied to Math.random() to color text.
+	var backgroundColor = 0x000000;
+	var backgroundAlpha = 1;
+
+	// Set the camera distance to the apex of the triange between the ends.
+	var eyeDistanceZ = altitudeFactor * width / 2; // px
+
+	var camera = new THREE.PerspectiveCamera(fieldOfView, width / height, near, far);
 	
 	var scene = new THREE.Scene();
 
 	var renderer = new THREE.CanvasRenderer();
 	renderer.setSize(width, height);
-	renderer.setClearColor(0x000000, 1);
+	renderer.setClearColor(backgroundColor, backgroundAlpha);
 
-	// Load the font, calculate geometry for message, center, and texture it.
 	THREE.FontUtils.loadFace(helvetiker);
 
 	var text3d = new THREE.TextGeometry( msg, {} );
 	text3d.computeBoundingBox();
-	
-	var centerOffset = -0.5 * ( text3d.boundingBox.max.x - text3d.boundingBox.min.x );
 
-	var textMaterial = new THREE.MeshBasicMaterial( { color: Math.random() * 0xffffff, overdraw: true } );
+	// Calculate text and camera placement from bounding box.
+	var textLength = ( text3d.boundingBox.max.x - text3d.boundingBox.min.x );
+	var textHeight = ( text3d.boundingBox.max.y - text3d.boundingBox.min.x );
+	var textDepth =  ( text3d.boundingBox.max.z - text3d.boundingBox.min.z );
+
+	// Offsets to center text in world.
+	var textOffsets = {
+		x: -0.5 * textLength,
+		y: -0.5 * textHeight,
+		z: -0.5 * textDepth
+	};
+
+	console.log("text position: " + textOffsets);
+	
+	// Stand back far enough to see the text;
+	camera.position.x = 0;
+	camera.position.y = 0;
+	camera.position.z = altitudeFactor * textLength / 2 + textDepth * adjustment;
+
+	console.log("eye position: " + camera.position);
+
+	var textMaterial = new THREE.MeshBasicMaterial({
+		color: Math.random() * textColorMask,
+	    	overdraw: true
+	});
 	
 	var text = new THREE.Mesh( text3d, textMaterial );
-	text.position.x = centerOffset;
-	text.position.y = 0;
-	text.position.z = 0;
+
+	text.position.x = textOffsets.x;
+	text.position.y = textOffsets.y;
+	text.position.z = textOffsets.z;
+
 	text.rotation.x = 0;
-	text.rotation.y = Math.PI * 2;
+	text.rotation.y = 0;
+	text.rotation.z = 0;
 
 	scene.add( text );
 

@@ -33,7 +33,7 @@ app.get('/text', function(req, res) {
 	var msg = "Hello World";
 
 	var camera = new THREE.PerspectiveCamera(50, width / height, 1, 1000);
-	camera.position.z = 100;
+	camera.position.z = 900;
 	
 	var scene = new THREE.Scene();
 	var renderer = new THREE.CanvasRenderer();
@@ -44,10 +44,10 @@ app.get('/text', function(req, res) {
 
 	var text3d = new THREE.TextGeometry( msg, {} );
 	text3d.computeBoundingBox();
+	console.log(text3d.boundingBox);
 	
-	var centerOffset = 0.0;//-0.5 * ( text3d.boundingBox.max.x - text3d.boundingBox.min.x );
+	var centerOffset = -0.5 * ( text3d.boundingBox.max.x - text3d.boundingBox.min.x );
 
-	/*
 	var textMaterial = new THREE.MeshBasicMaterial( { color: Math.random() * 0xffffff, overdraw: true } );
 	
 	var text = new THREE.Mesh( text3d, textMaterial );
@@ -59,15 +59,8 @@ app.get('/text', function(req, res) {
 
 	var group = new THREE.Object3D();
 	group.add( text );
-	scene.add( group );*/
+	scene.add( group );
 
-	var cube = new THREE.Mesh(new THREE.CubeGeometry(20, 20, 20), new THREE.MeshBasicMaterial( { color: 0xffffff } ));
-	cube.position.x = centerOffset;
-	cube.position.y = 0;
-	cube.position.z = 0;
-	cube.overdraw = true;
-	scene.add(cube);
-	
 	// Output
 	renderer.render(scene, camera);
 	renderer.domElement.toBuffer(function(err, buf) {

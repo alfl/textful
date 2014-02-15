@@ -98,7 +98,7 @@ app.get('/text/:msg', function(req, res) {
 
 	camera.rotation.x = 0;
 	camera.rotation.y = 0;
-	camera.rotation.z = 0;//-Math.PI / 2;
+	camera.rotation.z = -Math.PI / 2;
 
 	console.log("eye position: ");
 	console.log(camera.position);

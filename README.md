@@ -1,7 +1,7 @@
 textful
 =======
 
-A RESTful API for 3D Text Generation (but not really).
+A RESTful API for 3D Text Generation.
 
 instructions
 =======

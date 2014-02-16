@@ -27,25 +27,28 @@ app.get('/text/:msg', function(req, res) {
 	var msg = req.param("msg") || "error";
 
 	///// BEGIN MAGIC NUMBERS /////
+
 	var adjustment = 1; // times depth of text (added to distance to camera).
 
 	var fieldOfView = 90; // degrees
-	var altitudeFactor = Math.abs(Math.tan((180 - fieldOfView) / 2)); // helper factor to calculate camera height
-	var near = 1; // px
-	var far = 100000; // px
-	var width = 500; // px
-	var height = 500; // px
+	var altitudeRadians = ((180 - fieldOfView) / 2) * Math.PI / 180; // rads
+	var altitudeFactor = Math.abs(Math.tan(altitudeRadians)); // helper factor to calculate camera height
 
 	var textColor       = Math.random() * 0xFFFFFF;
 	var backgroundColor = 0xFFFFFF ^ textColor; // Set to complement of textColor.
 	var backgroundAlpha = 1;
+	
+	// Camera settings.
+	var near = 1; // px
+	var far = 100000; // px
+	var width = 1280; // px
+	var height = 720; // px
+
 	///// END MAGIC NUMBERS /////
 
 	var camera = new THREE.PerspectiveCamera(fieldOfView, width / height, near, far);
 	
 	var scene = new THREE.Scene();
-
-	console.log(backgroundColor.toString(16));
 
 	var renderer = new THREE.CanvasRenderer();
 	renderer.setSize(width, height);
@@ -55,7 +58,19 @@ app.get('/text/:msg', function(req, res) {
 	// Load the font so we can calculate geometry.
 	THREE.FontUtils.loadFace(helvetiker);
 
-	var text3d = new THREE.TextGeometry( msg, {} );
+	var text3dOptions = {
+		size: 100,
+		height: 50,
+		curveSegments: 10,
+		font: "helvetiker",
+		weight: "normal",
+		style: "normal",
+		bevelEnabled: true,
+		bevelThickness: 1,
+		bevelSize: 2
+	};
+
+	var text3d = new THREE.TextGeometry( msg, text3dOptions );
 	text3d.computeBoundingBox();
 
 	// Calculate text and camera placement from bounding box.
@@ -71,7 +86,7 @@ app.get('/text/:msg', function(req, res) {
 	};
 	
 	// Create, texture, and position text.
-	var textMaterial = new THREE.MeshBasicMaterial({
+	var textMaterial = new THREE.MeshLambertMaterial({
 		color: textColor, 
 	    	overdraw: true
 	});
@@ -98,11 +113,21 @@ app.get('/text/:msg', function(req, res) {
 
 	camera.rotation.x = 0;
 	camera.rotation.y = 0;
-	camera.rotation.z = 0;//-Math.PI / 2;
+	camera.rotation.z = 0;//Math.PI / 2;
 
 	console.log("eye position: ");
 	console.log(camera.position);
-
+	
+	// Add lighting.
+	var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+	directionalLight.position.set (
+		camera.position.x - textOffsets.x,
+		camera.position.y - textOffsets.y,
+		camera.position.z - textOffsets.z
+	);
+	
+	scene.add( directionalLight );
+	
 	// Render canvas as image and send to the client.
 	renderer.render(scene, camera);
 	renderer.domElement.toBuffer(function(err, buf) {

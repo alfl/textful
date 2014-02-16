@@ -59,7 +59,7 @@ app.get('/text/:msg', function(req, res) {
 	THREE.FontUtils.loadFace(helvetiker);
 
 	var text3dOptions = {
-		size: 90,
+		size: 100,
 		height: 50,
 		curveSegments: 10,
 		font: "helvetiker",

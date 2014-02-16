@@ -59,15 +59,15 @@ app.get('/text/:msg', function(req, res) {
 	THREE.FontUtils.loadFace(helvetiker);
 
 	var text3dOptions = {
-		size: 100,
+		size: 90,
 		height: 50,
-		curveSegments: 100,
+		curveSegments: 10,
 		font: "helvetiker",
 		weight: "normal",
 		style: "normal",
 		bevelEnabled: true,
 		bevelThickness: 1,
-		bevelSize: 1
+		bevelSize: 2
 	};
 
 	var text3d = new THREE.TextGeometry( msg, text3dOptions );

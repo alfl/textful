@@ -27,25 +27,28 @@ app.get('/text/:msg', function(req, res) {
 	var msg = req.param("msg") || "error";
 
 	///// BEGIN MAGIC NUMBERS /////
+
 	var adjustment = 1; // times depth of text (added to distance to camera).
 
 	var fieldOfView = 90; // degrees
-	var altitudeFactor = Math.abs(Math.tan((180 - fieldOfView) / 2)); // helper factor to calculate camera height
+	var altitudeRadians = ((180 - fieldOfView) / 2) * Math.PI / 180; // rads
+	var altitudeFactor = Math.abs(Math.tan(altitudeRadians)); // helper factor to calculate camera height
+
+	var textColor       = Math.random() * 0xFFFFFF;
+	var backgroundColor = 0xFFFFFF ^ textColor; // Set to complement of textColor.
+	var backgroundAlpha = 1;
+	
+	// Camera settings.
 	var near = 1; // px
 	var far = 100000; // px
 	var width = 1280; // px
 	var height = 720; // px
 
-	var textColor       = Math.random() * 0xFFFFFF;
-	var backgroundColor = 0xFFFFFF ^ textColor; // Set to complement of textColor.
-	var backgroundAlpha = 1;
 	///// END MAGIC NUMBERS /////
 
 	var camera = new THREE.PerspectiveCamera(fieldOfView, width / height, near, far);
 	
 	var scene = new THREE.Scene();
-
-	console.log(backgroundColor.toString(16));
 
 	var renderer = new THREE.CanvasRenderer();
 	renderer.setSize(width, height);
